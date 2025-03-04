@@ -17,7 +17,7 @@ export class PollServer extends Server<Env> {
   }
 
   onStart() {
-    this.sql.exec(`CREATE TABLE IF NOT EXISTS votes (id TEXT primary key, value TEXT)`)
+    this.createSchema()
   }
 
   onConnect(conn: Connection) {
@@ -27,13 +27,20 @@ export class PollServer extends Server<Env> {
   async onMessage(conn: Connection, message: string) {
     const vote = devalue.parse(message) as Vote
 
-    this.sql.exec('INSERT INTO votes(id, value) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET value = ?', conn.id, vote.value, vote.value)
-
+    this.insertVote(conn, vote)
     this.broadcast(devalue.stringify(this.summary()))
   }
 
   onError(conn: Connection, error: unknown) {
     console.error(error)
+  }
+
+  private createSchema() {
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS votes (id TEXT primary key, value TEXT)`)
+  }
+
+  private insertVote(conn: Connection, vote: Vote) {
+    this.sql.exec('INSERT INTO votes(id, value) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET value = ?', conn.id, vote.value, vote.value)
   }
 
   private summary(): Summary {
