@@ -17,3 +17,7 @@ Install & run dev server:
 pnpm install
 pnpm dev
 ```
+
+## License
+
+MIT
