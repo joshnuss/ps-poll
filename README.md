@@ -1,7 +1,7 @@
 Realtime Poll with PartyServer + Svelte
 ------------
 
-<img src="./screenshot.png" alt="screenshot" width="4001"/>
+<img src="./screenshot.png" alt="screenshot" width="400"/>
 
 A multi-player poll that syncs using Cloudflare [Durable Objects](https://developers.cloudflare.com/durable-objects).
 
