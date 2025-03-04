@@ -1,6 +1,6 @@
 <script lang="ts">
   import PartySocket from 'partysocket'
-  import type { Summary, Vote } from '../shared/types.ts'
+  import type { Summary, Vote } from '$shared/types.ts'
   import * as devalue from 'devalue'
 
   let summary = $state<Summary>()

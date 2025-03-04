@@ -1,5 +1,5 @@
 import { Server, type Connection, routePartykitRequest } from "partyserver"
-import type { Summary, Vote } from '../shared/types.ts'
+import type { Summary, Vote } from '$shared/types.ts'
 import { question, options } from './options.ts'
 import * as devalue from 'devalue'
 
