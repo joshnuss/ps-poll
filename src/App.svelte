@@ -47,6 +47,7 @@
       <svg viewBox="0 0 {summary.max} {summary.tally.size}">
         {#each summary.tally.entries() as [key, value], index}
           <rect class={{selected: key == selected}} x=0 y={index} height=0.9 width={value} style='fill: var(--{summary.options.get(key)?.color})' rx=0.1/>
+          <text x={value - 0.2 - (0.3 * value.toString().length)} y={index+0.6}>{value}</text>
         {/each}
       </svg>
     </section>
@@ -63,24 +64,31 @@
 
   form {
     display: flex;
-    gap: var(--size-4);
+    gap: var(--size-2);
   }
 
   button.selected {
     background: var(--indigo-5);
-    color: white;
+    color: transparent;
   }
 
   svg {
     width: 100%;
     max-height: 200px;
+    overflow: visible;
   }
 
   rect {
-    transition: all 0.1s var(--ease-4);
+    transition: all 0.2s var(--ease-4);
+    stroke-width: 0.05px;
+    stroke: white;
 
     &.selected {
-      fill: red;
+      stroke: var(--gray-6);
     }
+  }
+
+  text {
+    font-size: 0.5px;
   }
 </style>
