@@ -13,16 +13,16 @@
 	"durable_objects": {
 		"bindings": [
 			{
-				"name": "MyServer",
-				"class_name": "MyServer"
+				"name": "PollServer",
+				"class_name": "PollServer"
 			}
 		]
 	},
 	"migrations": [
 		{
 			"tag": "v1",
-			"new_classes": [
-				"MyServer"
+			"new_sqlite_classes": [
+				"PollServer"
 			]
 		}
 	],

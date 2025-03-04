@@ -1,62 +1,86 @@
 <script lang="ts">
   import PartySocket from 'partysocket'
   import { onMount } from 'svelte'
+  import type { Summary, Vote } from '../shared/types.ts'
+  import * as devalue from 'devalue'
 
   const ws = new PartySocket({
     host: window.location.host,
     room: 'room1',
-    party: 'my-server',
+    party: 'poll-server',
   })
 
-  let message = $state()
+  let summary = $state<Summary>()
+  let selected = $state<string | null>(null)
 
   onMount(() => {
     ws.addEventListener('message', onMessage)
-    ws.send('hello from the client!')
   })
 
   function onMessage(event: MessageEvent) {
-    message = event.data
+    summary = devalue.parse(event.data) as Summary
+  }
+
+  function vote(value: string) {
+    const vote: Vote = { value }
+
+    selected = value
+
+    ws.send(devalue.stringify(vote))
   }
 </script>
 
 <main>
-  <div>
-    <a href="https://vite.dev" target="_blank" rel="noreferrer">
-      <img src='/vite.svg' class="logo" alt="Vite Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
-      <img src='/svelte.svg' class="logo svelte" alt="Svelte Logo" />
-    </a>
-    <a href="https://partykit.io" target="_blank" rel="noreferrer">
-      <img src='/partykit.png' class="logo" alt="PartyKit Logo" />
-    </a>
-  </div>
-  <h1>Vite + Svelte + PartyKit</h1>
+  <h1>Poll</h1>
 
-  <p class="read-the-docs">
-    Click on the PartyKit, Vite and Svelte logos to learn more
-  </p>
+  {#if summary}
+    <p>{summary.question}</p>
+    <form onsubmit={e => e.preventDefault()}>
+      {#each summary.options.values() as option}
+        <button class={{selected: selected == option.key}} onclick={() => vote(option.key)}>
+          {option.description}
+        </button>
+      {/each}
+    </form>
 
-  <div class="card">
-    {message}
-  </div>
+    <section>
+      <svg viewBox="0 0 {summary.max} {summary.tally.size}">
+        {#each summary.tally.entries() as [key, value], index}
+          <rect class={{selected: key == selected}} x=0 y={index} height=0.9 width={value} style='fill: var(--{summary.options.get(key)?.color})' rx=0.1/>
+        {/each}
+      </svg>
+    </section>
+  {/if}
 </main>
 
 <style>
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
+  main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-5);
+    align-items: flex-start;
   }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
+
+  form {
+    display: flex;
+    gap: var(--size-4);
   }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
+
+  button.selected {
+    background: var(--indigo-5);
+    color: white;
   }
-  .read-the-docs {
-    color: #888;
+
+  svg {
+    width: 100%;
+    max-height: 200px;
+  }
+
+  rect {
+    transition: all 0.1s var(--ease-4);
+
+    &.selected {
+      fill: red;
+    }
   }
 </style>
