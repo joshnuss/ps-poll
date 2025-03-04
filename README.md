@@ -1,11 +1,13 @@
 Realtime Poll with PartyServer + Svelte
 ------------
 
-<img src="./screenshot.png" alt="screenshot" width="400"/>
-
 A multi-player poll that syncs using Cloudflare [Durable Objects](https://developers.cloudflare.com/durable-objects).
 
-[Live Demo](https://ps-poll.joshnuss-test-hello.workers.dev)
+## Screenshot
+
+<img src="./screenshot.png" alt="screenshot" width="400"/>
+
+## [Live Demo](https://ps-poll.joshnuss-test-hello.workers.dev)
 
 ## Usage
 
