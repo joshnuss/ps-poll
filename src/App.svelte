@@ -12,15 +12,14 @@
     party: 'poll-server',
   })
 
-  ws.addEventListener('message', onMessage)
-
-  function onMessage(event: MessageEvent) {
+  ws.addEventListener('message', (event: MessageEvent) => {
     summary = devalue.parse(event.data) as Summary
-  }
+  })
 
   function submit(value: string) {
-    vote = { value }
-    ws.send(devalue.stringify(vote))
+    vote = value
+
+    ws.send(vote)
   }
 </script>
 
@@ -31,7 +30,7 @@
     <p>{summary.question}</p>
     <form onsubmit={e => e.preventDefault()}>
       {#each summary.options.values() as option}
-        <button class={{selected: vote?.value == option.key}} onclick={() => submit(option.key)}>
+        <button class={{selected: vote == option.key}} onclick={() => submit(option.key)}>
           {option.description}
         </button>
       {/each}
@@ -41,7 +40,7 @@
       <svg viewBox="0 0 {summary.max} {summary.tally.size}">
         {#each summary.tally.entries() as [key, value], index}
           <rect
-            class={{selected: key == vote?.value}}
+            class={{selected: key == vote}}
             x=0
             y={index}
             height=0.9

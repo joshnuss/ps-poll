@@ -1,6 +1,4 @@
-export type Vote = {
-  value: string
-}
+export type Vote = string
 
 export type Option = {
   key: string

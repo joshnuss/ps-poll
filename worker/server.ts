@@ -24,9 +24,7 @@ export class PollServer extends Server<Env> {
     conn.send(devalue.stringify(this.summary()))
   }
 
-  async onMessage(conn: Connection, message: string) {
-    const vote = devalue.parse(message) as Vote
-
+  async onMessage(conn: Connection, vote: string) {
     this.insertVote(conn, vote)
     this.broadcast(devalue.stringify(this.summary()))
   }
@@ -40,7 +38,7 @@ export class PollServer extends Server<Env> {
   }
 
   private insertVote(conn: Connection, vote: Vote) {
-    this.sql.exec('INSERT INTO votes(id, value) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET value = ?', conn.id, vote.value, vote.value)
+    this.sql.exec('INSERT INTO votes(id, value) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET value = ?', conn.id, vote, vote)
   }
 
   private summary(): Summary {
