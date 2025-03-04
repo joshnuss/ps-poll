@@ -1,17 +1,15 @@
-partyvite-svelte
+Realtime Poll with PartyServer + Svelte
 ------------
 
-A (beta) starter template for 🎈 partyserver ⨉ ⚡️ vite ⨉ 🧡 svelte ⨉ ⛅️ cloudflare workers
+A multi-player poll that syncs using Cloudflare [Durable Objects](https://developers.cloudflare.com/durable-objects).
 
-A Svelte adaptation of Sunil Pai's [partyvite](https://github.com/threepointone/partyvite) & [partyvite-vue](https://github.com/franciscohermida/partyvite-vue) starter templates.
+[Live Demo](https://ps-poll.joshnuss-test-hello.workers.dev)
+
+## Usage
+
+Install & run dev server:
 
 ```sh
-pnpm create cloudflare@latest --template github:joshnuss/partyvite-svelte
+pnpm install
+pnpm dev
 ```
-
-## What next?
-
-- Change the name of the package (in `package.json`)
-- Change the name of the worker (in `wrangler.json`)
-- Change the title of the page in `index.html`
-- Run `pnpm run deploy` to deploy
