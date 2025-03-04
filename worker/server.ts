@@ -1,38 +1,11 @@
 import { Server, type Connection, routePartykitRequest } from "partyserver"
-import type { Option, Summary, Vote } from '../shared/types.ts'
+import type { Summary, Vote } from '../shared/types.ts'
+import { question, options } from './options.ts'
 import * as devalue from 'devalue'
 
 type Env = {
   PollServer: DurableObjectNamespace<PollServer>
 }
-
-const question = "What is your favorite fruit?"
-const options = new Map<string, Option>()
-
-function addOption(option: Option) {
-  options.set(option.key, option)
-}
-
-addOption({
-  key: "apple",
-  description: "Apple",
-  color: 'red-2'
-})
-addOption({
-  key: "pear",
-  description: "Pear",
-  color: 'green-2'
-})
-addOption({
-  key: "pineapple",
-  description: "Pineapple",
-  color: 'yellow-5'
-})
-addOption({
-  key: "kiwi",
-  description: "Kiwi",
-  color: 'green-4'
-})
 
 export class PollServer extends Server<Env> {
   sql: SqlStorage
@@ -44,11 +17,7 @@ export class PollServer extends Server<Env> {
   }
 
   onStart() {
-    this.sql.exec(`CREATE TABLE IF NOT EXISTS votes ( id TEXT primary key, value TEXT)`)
-  }
-
-  onError(conn: Connection, error: unknown) {
-    console.error(error)
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS votes (id TEXT primary key, value TEXT)`)
   }
 
   onConnect(conn: Connection) {
@@ -61,6 +30,10 @@ export class PollServer extends Server<Env> {
     this.sql.exec('INSERT INTO votes(id, value) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET value = ?', conn.id, vote.value, vote.value)
 
     this.broadcast(devalue.stringify(this.summary()))
+  }
+
+  onError(conn: Connection, error: unknown) {
+    console.error(error)
   }
 
   private summary(): Summary {

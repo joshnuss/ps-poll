@@ -54,9 +54,11 @@
             width={value}
             style='fill: var(--{summary.options.get(key)?.color})'
             rx=0.1
-            onclick={() => vote(key)}
           />
-          <text x={value - 0.2 - (0.3 * value.toString().length)} y={index+0.6}>{value}</text>
+
+          <text x={value - 0.2 - (0.3 * value.toString().length)} y={index+0.6}>
+            {value}
+          </text>
         {/each}
       </svg>
     </section>
