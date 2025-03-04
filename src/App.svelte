@@ -46,7 +46,16 @@
     <section>
       <svg viewBox="0 0 {summary.max} {summary.tally.size}">
         {#each summary.tally.entries() as [key, value], index}
-          <rect class={{selected: key == selected}} x=0 y={index} height=0.9 width={value} style='fill: var(--{summary.options.get(key)?.color})' rx=0.1/>
+          <rect
+            class={{selected: key == selected}}
+            x=0
+            y={index}
+            height=0.9
+            width={value}
+            style='fill: var(--{summary.options.get(key)?.color})'
+            rx=0.1
+            onclick={() => vote(key)}
+          />
           <text x={value - 0.2 - (0.3 * value.toString().length)} y={index+0.6}>{value}</text>
         {/each}
       </svg>
