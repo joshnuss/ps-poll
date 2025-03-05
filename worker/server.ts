@@ -33,7 +33,7 @@ export class PollServer extends Server<Env> {
   async onMessage(conn: Connection, vote: string) {
     this.db.insert(conn.id, vote)
 
-    await this.scheduleBroadcast()
+    await this.syncLater()
   }
 
   onAlarm() {
@@ -45,7 +45,7 @@ export class PollServer extends Server<Env> {
     console.error(error)
   }
 
-  private async scheduleBroadcast() {
+  private async syncLater() {
     const alarm = await this.storage.getAlarm()
 
     if (!alarm) {
