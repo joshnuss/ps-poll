@@ -8,14 +8,17 @@ type Env = {
   PollServer: DurableObjectNamespace<PollServer>
 }
 
+const SYNC_DELAY = 3_000
+
 export class PollServer extends Server<Env> {
-  sql: SqlStorage
+  storage: DurableObjectStorage
   db: DB
+  cache: Summary | null = null
 
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env)
 
-    this.sql = ctx.storage.sql
+    this.storage = ctx.storage
     this.db = new DB(ctx.storage.sql)
   }
 
@@ -24,11 +27,23 @@ export class PollServer extends Server<Env> {
   }
 
   onConnect(conn: Connection) {
+    console.log('connected', conn.id)
+    console.log(devalue.stringify(this.summary()))
     conn.send(devalue.stringify(this.summary()))
   }
 
   async onMessage(conn: Connection, vote: string) {
     this.db.insert(conn.id, vote)
+
+    const alarm = await this.storage.getAlarm()
+
+    if (!alarm) {
+      await this.storage.setAlarm(Date.now() + SYNC_DELAY)
+    }
+  }
+
+  onAlarm() {
+    this.cache = null
     this.broadcast(devalue.stringify(this.summary()))
   }
 
@@ -37,10 +52,16 @@ export class PollServer extends Server<Env> {
   }
 
   private summary(): Summary {
+    if (this.cache) {
+      return this.cache
+    }
+
     const tally = this.db.summary()
     const max = Math.max(...tally.values())
 
-    return { question, options, max, tally }
+    this.cache = { question, options, max, tally }
+
+    return this.cache
   }
 }
 

@@ -2,6 +2,7 @@
   import PartySocket from 'partysocket'
   import type { Summary, Vote } from '$shared/types.ts'
   import * as devalue from 'devalue'
+  import { SvelteMap } from 'svelte/reactivity'
 
   let summary = $state<Summary>()
   let vote = $state<Vote>()
@@ -14,10 +15,16 @@
 
   ws.addEventListener('message', (event: MessageEvent) => {
     summary = devalue.parse(event.data) as Summary
+    summary.tally = new SvelteMap(summary.tally)
   })
 
   function submit(value: string) {
     vote = value
+
+    if (summary) {
+      const total = summary.tally.get(vote) || 0
+      summary.tally.set(vote, total+1)
+    }
 
     ws.send(vote)
   }
