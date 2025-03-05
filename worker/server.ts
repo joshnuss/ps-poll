@@ -27,19 +27,13 @@ export class PollServer extends Server<Env> {
   }
 
   onConnect(conn: Connection) {
-    console.log('connected', conn.id)
-    console.log(devalue.stringify(this.summary()))
     conn.send(devalue.stringify(this.summary()))
   }
 
   async onMessage(conn: Connection, vote: string) {
     this.db.insert(conn.id, vote)
 
-    const alarm = await this.storage.getAlarm()
-
-    if (!alarm) {
-      await this.storage.setAlarm(Date.now() + SYNC_DELAY)
-    }
+    await this.scheduleBroadcast()
   }
 
   onAlarm() {
@@ -49,6 +43,14 @@ export class PollServer extends Server<Env> {
 
   onError(conn: Connection, error: unknown) {
     console.error(error)
+  }
+
+  private async scheduleBroadcast() {
+    const alarm = await this.storage.getAlarm()
+
+    if (!alarm) {
+      await this.storage.setAlarm(Date.now() + SYNC_DELAY)
+    }
   }
 
   private summary(): Summary {
