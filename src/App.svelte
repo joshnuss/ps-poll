@@ -19,13 +19,19 @@
   })
 
   function submit(value: string) {
-    vote = value
-
     if (summary) {
-      const total = summary.tally.get(vote) || 0
-      summary.tally.set(vote, total+1)
+      let total: number
+
+      if (vote) {
+        total = summary.tally.get(vote)
+        summary.tally.set(vote, total-1)
+      }
+
+      total = summary.tally.get(value) || 0
+      summary.tally.set(value, total+1)
     }
 
+    vote = value
     ws.send(vote)
   }
 </script>
